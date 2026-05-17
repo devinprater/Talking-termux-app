@@ -78,13 +78,21 @@ public class TerminalAccessibilityHelper extends ExploreByTouchHelper {
 
         node.setText(text);
         node.setContentDescription(text);
-        
+
+        // Tell TalkBack's braille display routing that this node accepts text input.
+        // Without these, TalkBack's isModalFieldFocused() returns false and physical braille
+        // display key presses fall through to DefaultConsumer instead of EditorConsumer,
+        // producing an error sound even after BrailleIme has been activated via Enter/routing key.
+        node.setEditable(true);
+        node.setClassName("android.widget.EditText");
+        node.setFocused(mView.hasFocus());
+
         // Bounds: from top of startRow to bottom of endRow
         int top = startRow * mView.mRenderer.getFontLineSpacing();
         int bottom = (endRow + 1) * mView.mRenderer.getFontLineSpacing();
         int width = mView.getWidth();
         node.setBoundsInParent(new Rect(0, top, width, bottom));
-        
+
         node.addAction(AccessibilityNodeInfoCompat.ACTION_CLICK);
     }
 
